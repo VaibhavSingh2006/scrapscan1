@@ -23,7 +23,7 @@ When scrap-loaded trucks arrive at Indian steel plants, workers do **manual visu
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/your-repo/scrapscan
+git clone https://github.com/Saurabh6266/scrapscan
 cd scrapscan
 npm install
 npm start
