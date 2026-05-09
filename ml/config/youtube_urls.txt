@@ -1,0 +1,22 @@
+# YouTube URLs for galvanized steel frame extraction
+# Add one URL per line. Blank lines and lines starting with # are ignored.
+# These videos should show galvanized/zinc-coated steel scrap clearly.
+# Recommended: scrap yard videos, galvanizing process videos, steel recycling demos
+#
+# Example (fill in real URLs below):
+# https://www.youtube.com/watch?v=EXAMPLE1
+# https://www.youtube.com/watch?v=EXAMPLE2
+#
+# INSTRUCTIONS:
+# 1. Search YouTube for: "galvanized steel scrap recycling", "zinc coated steel scrap yard"
+# 2. Add those URLs here before running Cell 5 in the Colab notebook
+# 3. Upload this file to Colab when prompted
+
+https://youtu.be/_ErocQ2S080?si=Al9f5c_q6FEBBnLJ
+https://youtu.be/ZdgjTPv8_pM?si=GSKw0XlOSjAIrSde
+https://youtu.be/W1hw4FEiiNc?si=jU0QuN3ug1EVzd1E
+https://youtu.be/Y-2JPjN1VoE?si=ennJkweizuYOdoRA
+https://youtube.com/shorts/gIlIbWxmtgA?si=ZhwvZ0HH2G4BgbED
+https://youtube.com/shorts/if22ynphN2E?si=XcqGgA4v4IrvIRqs
+https://youtube.com/shorts/jpYt97Wsd08?si=qp5gwLTlHLXwaoqc
+https://youtu.be/4WCtm31AJTg?si=i1GBjgo5EfdLptye

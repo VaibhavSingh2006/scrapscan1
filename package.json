@@ -1,0 +1,35 @@
+{
+  "name": "scrapscan",
+  "version": "2.0.0",
+  "description": "AI Scrap Quality Intelligence Platform — IIM MATRIXx 2026",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "onnxruntime-node": "^1.26.0",
+    "pdfkit": "^0.14.0",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "scrap",
+    "steel",
+    "AI",
+    "ONNX",
+    "quality",
+    "India"
+  ],
+  "author": "ScrapScan Team — IIT ISM Dhanbad",
+  "license": "MIT"
+}

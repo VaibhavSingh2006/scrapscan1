@@ -1,0 +1,92 @@
+{
+  "classes": [
+    {
+      "id": 0,
+      "key": "hms1",
+      "label": "HMS-1 Heavy Steel",
+      "is2314": "IS 2314: No. 1 Heavy Melting Scrap (HMS-1)",
+      "description": "Thick structural steel — beams, plates, rods ≥6mm",
+      "zinc_label": 0,
+      "ferrous_yield": 0.95,
+      "melt_temp_c": 1530,
+      "furnace_eaf": "EXCELLENT",
+      "furnace_bof": "EXCELLENT",
+      "furnace_induction": "GOOD"
+    },
+    {
+      "id": 1,
+      "key": "hms2",
+      "label": "HMS-2 Light Steel",
+      "is2314": "IS 2314: No. 2 Heavy Melting Scrap (HMS-2)",
+      "description": "Thin sheet metal, stampings, small sections <6mm",
+      "zinc_label": 0,
+      "ferrous_yield": 0.88,
+      "melt_temp_c": 1520,
+      "furnace_eaf": "GOOD",
+      "furnace_bof": "GOOD",
+      "furnace_induction": "EXCELLENT"
+    },
+    {
+      "id": 2,
+      "key": "galv",
+      "label": "Galvanized Steel",
+      "is2314": "IS 2314: HMS-2 / Zorba [HIGH ZINC RISK — pre-sort required]",
+      "description": "Zinc-coated steel — spangled/matte silver surface",
+      "zinc_label": 1,
+      "ferrous_yield": 0.82,
+      "melt_temp_c": 700,
+      "dezinc_required": true,
+      "furnace_eaf": "LIMITED",
+      "furnace_bof": "NONE",
+      "furnace_induction": "NONE"
+    },
+    {
+      "id": 3,
+      "key": "ss",
+      "label": "Stainless Steel",
+      "is2314": "IS 2314: Stainless Steel Scrap (SS Grade)",
+      "description": "High-alloy steel — bright, reflective, minimal oxidation",
+      "zinc_label": 0,
+      "ferrous_yield": 0.90,
+      "melt_temp_c": 1480,
+      "furnace_eaf": "GOOD",
+      "furnace_bof": "NONE",
+      "furnace_induction": "EXCELLENT"
+    },
+    {
+      "id": 4,
+      "key": "nonfe",
+      "label": "Non-Ferrous",
+      "is2314": "Non-Ferrous — EAF NOT RECOMMENDED",
+      "description": "Copper, aluminium, brass — reddish/bright silver",
+      "zinc_label": 0,
+      "ferrous_yield": 0.0,
+      "melt_temp_c": null,
+      "furnace_eaf": "NONE",
+      "furnace_bof": "NONE",
+      "furnace_induction": "NONE"
+    },
+    {
+      "id": 5,
+      "key": "mixed",
+      "label": "Mixed/Contaminated",
+      "is2314": "IS 2314: Mixed Grade — sorting required before charging",
+      "description": "Visible plastic, rubber, wood, organics — pre-sort required",
+      "zinc_label": 0,
+      "ferrous_yield": 0.65,
+      "melt_temp_c": null,
+      "furnace_eaf": "NONE",
+      "furnace_bof": "NONE",
+      "furnace_induction": "NONE"
+    }
+  ],
+  "zinc_thresholds": {
+    "low": 0.30,
+    "medium": 0.60,
+    "high": 1.0
+  },
+  "eafd": {
+    "kg_per_tonne_per_unit_zinc_prob": 25,
+    "disposal_cost_inr_per_tonne": 12000
+  }
+}

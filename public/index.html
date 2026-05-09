@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ScrapScan — AI Scrap Quality Intelligence Platform</title>
+<meta name="description" content="ScrapScan uses AI to assess ferrous scrap quality, detect zinc/galvanization risk, and generate IS 2314 grade reports for Indian steel plants."/>
+<link rel="stylesheet" href="css/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/ort.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <div class="logo-icon">⚙</div>
+      <div>
+        <div class="logo-text">ScrapScan</div>
+        <div class="logo-sub">AI SCRAP INTELLIGENCE</div>
+      </div>
+    </a>
+
+    <div class="tab-pills" id="mainTabPills">
+      <button class="tab-pill active" data-main-tab="ferrous" id="tabFerrous">⚙ Ferrous Scrap</button>
+      <button class="tab-pill" data-main-tab="ewaste" id="tabEwaste">🔌 E-Waste / PCB</button>
+    </div>
+
+    <div class="status-badge">
+      <div class="status-dot demo" id="statusDot"></div>
+      <span id="statusText">Model: Demo Mode</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══ MAIN ══ -->
+<div class="main-wrapper">
+
+  <!-- Demo Banner -->
+  <div class="demo-banner" id="demoBanner">
+    🔬 <strong>Demo Mode</strong> — Upload any scrap metal image to see the full platform capability. Production model loading...
+  </div>
+
+  <!-- Truck ID Row -->
+  <div style="margin-top:16px;">
+    <div class="truck-input-row">
+      <div class="input-group">
+        <label for="truckId">Truck / Batch ID</label>
+        <input type="text" id="truckId" placeholder="e.g. TRK-2026-0509-A" />
+      </div>
+      <button class="btn btn-outline" id="btnExportReport" style="height:38px;" disabled>📄 Export PDF</button>
+      <button class="btn btn-outline" id="btnShare" style="height:38px;" disabled>🔗 Share</button>
+    </div>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="columns" id="ferrousTab">
+
+    <!-- ══ LEFT COLUMN ══ -->
+    <div class="left-col">
+
+      <!-- Scan Interface -->
+      <div class="card">
+        <div class="card-title">📷 Scan Interface</div>
+
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">📸</div>
+          <p><strong>Drag & drop</strong> scrap image here</p>
+          <p style="margin-top:4px;font-size:0.78rem;">or click to browse</p>
+          <input type="file" id="fileInput" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;"/>
+        </div>
+
+        <div class="preview-container" id="previewContainer">
+          <img id="previewImg" src="" alt="Scrap preview"/>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-outline" id="btnCamera">📷 Camera</button>
+          <button class="btn btn-outline" id="btnClear">✕ Clear</button>
+        </div>
+
+        <button class="btn btn-primary analyse-btn" id="btnAnalyse" disabled>
+          <span id="analyseText">Analyse Scrap</span>
+          <div class="spinner" id="analyseSpinner"></div>
+        </button>
+      </div>
+
+      <!-- Classification Result -->
+      <div class="card result-section" id="resultSection">
+        <div class="card-title">🎯 Classification Result</div>
+
+        <div class="detected-class">
+          <span class="class-badge" id="classBadge">—</span>
+          <div>
+            <div class="detected-name" id="detectedName">—</div>
+            <div class="is-grade-tag" id="isGradeTag">—</div>
+          </div>
+        </div>
+
+        <div class="confidence-bar-wrap">
+          <div class="conf-label">
+            <span>Confidence</span>
+            <span id="confPct" style="font-weight:700;">—</span>
+          </div>
+          <div class="conf-bar-bg"><div class="conf-bar-fill" id="confBarFill"></div></div>
+        </div>
+
+        <div class="card-title" style="margin-top:12px;">Top Predictions</div>
+        <div class="top3-list" id="top3List"></div>
+      </div>
+
+      <!-- Zinc Risk Panel -->
+      <div class="zinc-panel" id="zincPanel">
+        <div class="zinc-header">
+          <div class="zinc-title">⚠ ZINC CONTAMINATION RISK</div>
+          <div class="zinc-level-badge" id="zincLevelBadge">—</div>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <div class="zinc-prob-big" id="zincProbBig">—</div>
+          <div class="zinc-prob-label">probability of galvanized steel</div>
+        </div>
+        <div class="zinc-stats">
+          <div class="zinc-stat">
+            <div class="zinc-stat-val" id="eafdKg">—</div>
+            <div class="zinc-stat-lbl">Est. EAFD (kg/tonne)</div>
+          </div>
+          <div class="zinc-stat">
+            <div class="zinc-stat-val" id="eafdCost">—</div>
+            <div class="zinc-stat-lbl">Disposal cost / 100T</div>
+          </div>
+        </div>
+        <div class="zinc-rec" id="zincRec">—</div>
+      </div>
+
+    </div><!-- /left-col -->
+
+    <!-- ══ RIGHT COLUMN ══ -->
+    <div class="right-col">
+
+      <!-- Panel Tabs -->
+      <div class="panel-tabs" id="panelTabs">
+        <button class="panel-tab active" data-panel="material">🔬 Material</button>
+        <button class="panel-tab" data-panel="furnace">🔥 Furnace</button>
+        <button class="panel-tab" data-panel="economics">💰 Economics</button>
+        <button class="panel-tab" data-panel="contamination">⚠ Contamination</button>
+        <button class="panel-tab" data-panel="environmental">🌱 Environmental</button>
+      </div>
+
+      <!-- PANEL: Material Analysis -->
+      <div class="card panel-content active" id="panel-material">
+        <div class="card-title">⚗ Alloy Composition Estimate</div>
+        <div id="compBars">
+          <div class="comp-bar-row"><div class="comp-label"><span>Iron (Fe)</span><span id="fePct">—</span></div><div class="comp-bar-bg"><div class="comp-bar-fill comp-fill-fe" id="feBar"></div></div></div>
+          <div class="comp-bar-row"><div class="comp-label"><span>Non-ferrous</span><span id="nfePct">—</span></div><div class="comp-bar-bg"><div class="comp-bar-fill comp-fill-nfe" id="nfeBar"></div></div></div>
+          <div class="comp-bar-row"><div class="comp-label"><span>Waste / Organic</span><span id="wastePct">—</span></div><div class="comp-bar-bg"><div class="comp-bar-fill comp-fill-waste" id="wasteBar"></div></div></div>
+        </div>
+        <div class="card-title mt-16">📋 Material Properties</div>
+        <ul id="materialProps" style="list-style:none;display:flex;flex-direction:column;gap:6px;font-size:0.84rem;color:var(--text-muted);"></ul>
+      </div>
+
+      <!-- PANEL: Furnace Intelligence -->
+      <div class="card panel-content" id="panel-furnace">
+        <div class="card-title">🏭 IS 2314 Grade Details</div>
+        <p id="gradeDesc" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px;">—</p>
+
+        <div class="card-title">⚙ Furnace Compatibility</div>
+        <div class="furnace-grid" id="furnaceGrid">
+          <div class="furnace-row"><span class="furnace-name">⚡ EAF (Electric Arc Furnace)</span><span class="compat-tag" id="compat-eaf">—</span></div>
+          <div class="furnace-row"><span class="furnace-name">🔥 BOF (Basic Oxygen Furnace)</span><span class="compat-tag" id="compat-bof">—</span></div>
+          <div class="furnace-row"><span class="furnace-name">🌀 Induction Furnace</span><span class="compat-tag" id="compat-ind">—</span></div>
+        </div>
+
+        <div class="card-title mt-16">🌡 Thermal Processing Window</div>
+        <div id="thermalBars">
+          <div class="thermal-row"><div class="thermal-label"><span>HMS-1 Melting</span><span>1530°C</span></div><div class="thermal-track"><div class="thermal-fill" style="width:96%;"></div></div></div>
+          <div class="thermal-row"><div class="thermal-label"><span>HMS-2 Melting</span><span>1520°C</span></div><div class="thermal-track"><div class="thermal-fill" style="width:94%;"></div></div></div>
+          <div class="thermal-row"><div class="thermal-label"><span>Galv. De-Zinc (pre-req)</span><span>700°C</span></div><div class="thermal-track"><div class="thermal-fill" style="width:40%;background:linear-gradient(90deg,#f59e0b,#ff6400);"></div></div></div>
+          <div class="thermal-row"><div class="thermal-label"><span>Stainless (Cr-safe)</span><span>1480°C</span></div><div class="thermal-track"><div class="thermal-fill" style="width:90%;background:linear-gradient(90deg,#a855f7,#7B2FBE);"></div></div></div>
+        </div>
+
+        <div class="card-title mt-16">💡 Charge Recommendation</div>
+        <div class="zinc-rec" style="border-left-color:#7B2FBE;" id="chargeRec">—</div>
+      </div>
+
+      <!-- PANEL: Economics -->
+      <div class="card panel-content" id="panel-economics">
+        <div class="card-title">💰 Economic Calculator</div>
+        <div class="econ-inputs">
+          <div class="input-group">
+            <label for="econWeight">Weight (kg)</label>
+            <input type="number" id="econWeight" value="10000" min="1"/>
+          </div>
+          <div class="input-group">
+            <label for="econPrice">Scrap Price (₹/tonne)</label>
+            <input type="number" id="econPrice" value="28000" min="1"/>
+          </div>
+        </div>
+        <div class="econ-results" id="econResults">
+          <div class="econ-row"><span class="econ-row-label">Gross load value</span><span class="econ-row-val" id="econGross">—</span></div>
+          <div class="econ-row"><span class="econ-row-label">Usable iron (est.)</span><span class="econ-row-val" id="econUsable">—</span></div>
+          <div class="econ-row"><span class="econ-row-label">Non-recoverable</span><span class="econ-row-val text-high" id="econLoss">—</span></div>
+          <div class="econ-row"><span class="econ-row-label">EAFD disposal cost</span><span class="econ-row-val text-high" id="econEafd">—</span></div>
+          <div class="econ-row net"><span class="econ-row-label fw-700">Net load value</span><span class="econ-row-val" id="econNet">—</span></div>
+        </div>
+      </div>
+
+      <!-- PANEL: Contamination -->
+      <div class="card panel-content" id="panel-contamination">
+        <div class="card-title">☣ Contamination Risk Assessment</div>
+        <div class="contam-grid" id="contamGrid">
+          <div class="contam-card"><div class="contam-icon">⚡</div><div class="contam-name">Zinc (Galvanizing)</div><div class="contam-level" id="contamZinc">—</div></div>
+          <div class="contam-card"><div class="contam-icon">🔴</div><div class="contam-name">Copper (Embrittlement)</div><div class="contam-level" id="contamCu">—</div></div>
+          <div class="contam-card"><div class="contam-icon">🟤</div><div class="contam-name">Plastics / Organics</div><div class="contam-level" id="contamOrg">—</div></div>
+          <div class="contam-card"><div class="contam-icon">🎨</div><div class="contam-name">Lead-based Paint</div><div class="contam-level" id="contamPb">—</div></div>
+        </div>
+
+        <div class="card-title mt-16">🏷 Regulatory Tags</div>
+        <div id="regTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;"></div>
+
+        <div class="card-title">📋 Handling Protocol</div>
+        <div class="protocol-steps" id="protocolSteps"></div>
+      </div>
+
+      <!-- PANEL: Environmental -->
+      <div class="card panel-content" id="panel-environmental">
+        <div class="card-title">🌱 Environmental Impact</div>
+        <div class="env-metric"><span class="env-metric-lbl">CO₂ saved vs. virgin iron</span><span class="env-metric-val" id="envCo2">—</span></div>
+        <div class="env-metric"><span class="env-metric-lbl">Carbon footprint</span><span class="env-metric-val" id="envCarbon">—</span></div>
+        <div class="env-metric"><span class="env-metric-lbl">Recycling efficiency</span><span class="env-metric-val" id="envEff">—</span></div>
+        <div class="env-metric"><span class="env-metric-lbl">Market value</span><span class="env-metric-val" id="envMarket">—</span></div>
+
+        <div class="card-title mt-16">📊 ESG Compliance Score</div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--bg);border-radius:var(--radius-sm);">
+          <span class="esg-badge" id="esgBadge">B</span>
+          <span style="font-size:0.84rem;color:var(--text-muted);" id="esgDesc">Run analysis to calculate ESG score.</span>
+        </div>
+
+        <div class="card-title mt-16">🕸 Market Value Radar</div>
+        <div class="radar-wrap"><canvas id="radarChart" width="300" height="300"></canvas></div>
+      </div>
+
+    </div><!-- /right-col -->
+  </div><!-- /columns -->
+
+  <!-- ══ E-WASTE TAB ══ -->
+  <div id="ewasteTab" class="hidden">
+    <div class="card" style="margin-top:16px;text-align:center;padding:40px;">
+      <div style="font-size:3rem;margin-bottom:16px;">🔌</div>
+      <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:8px;">E-Waste / PCB Module</h2>
+      <p style="color:var(--text-muted);max-width:500px;margin:0 auto;">This module handles electronic waste and PCB analysis. Switch back to <strong>Ferrous Scrap</strong> for the primary AI-powered assessment tool.</p>
+      <button class="btn btn-primary" style="margin:24px auto 0;max-width:200px;" onclick="document.getElementById('tabFerrous').click()">Go to Ferrous Scrap →</button>
+    </div>
+  </div>
+
+  <!-- ══ BOTTOM SECTION ══ -->
+  <div class="bottom-section">
+
+    <!-- Supplier Scorecard -->
+    <div class="card">
+      <div class="section-title">🏭 Supplier Scorecard</div>
+      <table class="supplier-table">
+        <thead>
+          <tr>
+            <th>Supplier</th>
+            <th>Loads</th>
+            <th>Avg Grade</th>
+            <th>Zinc Risk</th>
+            <th>Compliance</th>
+          </tr>
+        </thead>
+        <tbody id="supplierBody">
+          <tr><td>Sharma Scrap Pvt Ltd</td><td>48</td><td><span class="grade-chip" style="background:rgba(0,200,100,0.15);color:#00c864;">HMS-1</span></td><td class="text-low">LOW</td><td class="text-low">✔ IS 2314</td></tr>
+          <tr><td>Gupta Metal Works</td><td>31</td><td><span class="grade-chip" style="background:rgba(0,150,255,0.15);color:#60a5fa;">HMS-2</span></td><td class="text-medium">MEDIUM</td><td class="text-medium">⚠ Partial</td></tr>
+          <tr><td>Rajasthan Scrap Corp</td><td>22</td><td><span class="grade-chip" style="background:rgba(255,45,120,0.15);color:var(--primary);">Galv.</span></td><td class="text-high">HIGH</td><td class="text-high">✖ Non-compliant</td></tr>
+          <tr><td>Delhi Iron Traders</td><td>17</td><td><span class="grade-chip" style="background:rgba(0,200,100,0.15);color:#00c864;">HMS-1</span></td><td class="text-low">LOW</td><td class="text-low">✔ IS 2314</td></tr>
+          <tr><td>Mumbai Metals Ltd</td><td>39</td><td><span class="grade-chip" style="background:rgba(255,100,0,0.15);color:#ff6400;">Mixed</span></td><td class="text-medium">MEDIUM</td><td class="text-medium">⚠ Partial</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Scan History -->
+    <div class="card">
+      <div class="section-title">🕒 Recent Scan History <span style="font-size:0.75rem;color:var(--text-muted);font-weight:400;">(last 10 — stored locally)</span></div>
+      <div class="history-list" id="historyList">
+        <p style="color:var(--text-muted);font-size:0.84rem;text-align:center;padding:20px 0;">No scans yet. Upload an image to begin.</p>
+      </div>
+    </div>
+
+  </div><!-- /bottom-section -->
+
+</div><!-- /main-wrapper -->
+
+<!-- Camera Modal -->
+<div id="cameraModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <video id="cameraVideo" autoplay playsinline style="max-width:90vw;max-height:60vh;border-radius:12px;border:2px solid var(--primary);"></video>
+  <div style="display:flex;gap:12px;">
+    <button class="btn btn-primary" id="btnCapture" style="flex:none;">📸 Capture</button>
+    <button class="btn btn-outline" id="btnCloseCamera" style="flex:none;">✕ Cancel</button>
+  </div>
+  <canvas id="captureCanvas" style="display:none;"></canvas>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/demo.js"></script>
+<script src="js/model.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF2D78"/>
+      <stop offset="100%" style="stop-color:#7B2FBE"/>
+    </linearGradient>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="90" fill="#12121a" stroke="url(#g1)" stroke-width="3"/>
+  <!-- Gear outer -->
+  <circle cx="100" cy="100" r="55" fill="none" stroke="url(#g1)" stroke-width="6"/>
+  <!-- Gear teeth -->
+  <g fill="url(#g1)">
+    <rect x="93" y="32" width="14" height="20" rx="3"/>
+    <rect x="93" y="148" width="14" height="20" rx="3"/>
+    <rect x="32" y="93" width="20" height="14" rx="3"/>
+    <rect x="148" y="93" width="20" height="14" rx="3"/>
+    <rect x="49" y="49" width="14" height="20" rx="3" transform="rotate(45 56 59)"/>
+    <rect x="129" y="49" width="14" height="20" rx="3" transform="rotate(-45 136 59)"/>
+    <rect x="49" y="129" width="14" height="20" rx="3" transform="rotate(-45 56 139)"/>
+    <rect x="129" y="129" width="14" height="20" rx="3" transform="rotate(45 136 139)"/>
+  </g>
+  <!-- Inner hub -->
+  <circle cx="100" cy="100" r="28" fill="url(#g1)"/>
+  <circle cx="100" cy="100" r="14" fill="#0a0a0f"/>
+  <!-- Scan line -->
+  <line x1="65" y1="100" x2="135" y2="100" stroke="#FF2D78" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+  <line x1="100" y1="65" x2="100" y2="135" stroke="#FF2D78" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+</svg>
