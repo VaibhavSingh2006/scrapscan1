@@ -1,7 +1,7 @@
 // app.js — Main application logic
 
 let currentResult = null;
-let cameraStream  = null;
+let cameraStream = null;
 
 // ── INIT ──
 (async function init() {
@@ -38,9 +38,9 @@ let cameraStream  = null;
 
   // Upload zone
   const uploadZone = document.getElementById('uploadZone');
-  const fileInput  = document.getElementById('fileInput');
+  const fileInput = document.getElementById('fileInput');
 
-  uploadZone.addEventListener('dragover',  e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
   uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
   uploadZone.addEventListener('drop', e => {
     e.preventDefault();
@@ -197,8 +197,8 @@ function shareResult() {
   const text = `ScrapScan Report\n` +
     `Grade: ${currentResult.topClass}\n` +
     `IS 2314: ${currentResult.isGrade}\n` +
-    `Confidence: ${Math.round(currentResult.confidence*100)}%\n` +
-    `Zinc Risk: ${currentResult.zincRisk.level} (${Math.round(currentResult.zincRisk.probability*100)}%)`;
+    `Confidence: ${Math.round(currentResult.confidence * 100)}%\n` +
+    `Zinc Risk: ${currentResult.zincRisk.level} (${Math.round(currentResult.zincRisk.probability * 100)}%)`;
   if (navigator.share) {
     navigator.share({ title: 'ScrapScan Report', text });
   } else {

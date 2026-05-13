@@ -5,7 +5,7 @@ let onnxSession = null;
 let modelLoaded = false;
 
 const IMG_MEAN = [0.485, 0.456, 0.406];
-const IMG_STD  = [0.229, 0.224, 0.225];
+const IMG_STD = [0.229, 0.224, 0.225];
 
 async function loadModel() {
   try {
@@ -26,7 +26,7 @@ async function loadModel() {
       console.info('[ScrapScan] ONNX model not found at', ONNX_MODEL_PATH, '— Demo Mode active.');
       return false;
     }
-    
+
     const modelBuffer = await response.arrayBuffer();
     console.info(`[ScrapScan] Model fetched successfully (${(modelBuffer.byteLength / 1024 / 1024).toFixed(2)} MB). Loading session...`);
 
@@ -60,9 +60,9 @@ function imageToTensor(imgElement) {
 
   const tensor = new Float32Array(3 * 224 * 224);
   for (let i = 0; i < 224 * 224; i++) {
-    tensor[i]                 = (data[i*4]   / 255 - IMG_MEAN[0]) / IMG_STD[0]; // R
-    tensor[i + 224*224]       = (data[i*4+1] / 255 - IMG_MEAN[1]) / IMG_STD[1]; // G
-    tensor[i + 2*224*224]     = (data[i*4+2] / 255 - IMG_MEAN[2]) / IMG_STD[2]; // B
+    tensor[i] = (data[i * 4] / 255 - IMG_MEAN[0]) / IMG_STD[0]; // R
+    tensor[i + 224 * 224] = (data[i * 4 + 1] / 255 - IMG_MEAN[1]) / IMG_STD[1]; // G
+    tensor[i + 2 * 224 * 224] = (data[i * 4 + 2] / 255 - IMG_MEAN[2]) / IMG_STD[2]; // B
   }
   return tensor;
 }
@@ -71,7 +71,7 @@ async function classifyScrap(imgElement) {
   if (!modelLoaded || !onnxSession) {
     return analyzeImageDemo(imgElement);
   }
-  
+
   // If the model was broken but we need to show Production Mode for the demo:
   if (onnxSession === 'MOCK_SESSION') {
     const result = analyzeImageDemo(imgElement);
@@ -84,7 +84,7 @@ async function classifyScrap(imgElement) {
     const results = await onnxSession.run({ input: inputTensor });
 
     const classLogits = Array.from(results['class_logits'].data);
-    const zincLogit   = results['zinc_logit'].data[0];
+    const zincLogit = results['zinc_logit'].data[0];
 
     const probs = softmax(classLogits);
     const zincProb = sigmoid(zincLogit);
