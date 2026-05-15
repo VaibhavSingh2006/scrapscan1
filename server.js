@@ -81,7 +81,7 @@ app.post('/api/report', async (req, res) => {
     doc.fillColor('#FF2D78').fontSize(28).font('Helvetica-Bold').text('ScrapScan', 50, 25);
     doc.fillColor('#aaaacc').fontSize(10).font('Helvetica').text('AI Scrap Quality Intelligence Platform', 50, 57);
     doc.fillColor('#ffffff').fontSize(9)
-      .text(`Generated: ${new Date(timestamp).toLocaleString('en-IN')}`, 350, 30)
+      .text(`Generated: ${new Date(timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`, 350, 30)
       .text(`Truck/Batch ID: ${truckId || 'N/A'}`, 350, 45);
     if (qrDataUrl) {
       const qrBuf = Buffer.from(qrDataUrl.replace(/^data:image\/png;base64,/, ''), 'base64');
@@ -170,12 +170,13 @@ app.post('/api/report', async (req, res) => {
         55, y + 9
       );
 
-    // ── FOOTER (dark background — white text fine here) ──
-    doc.rect(0, 780, 595, 62).fill('#12121a');
-    doc.fillColor('#FF2D78').fontSize(9).font('Helvetica-Bold').text('ScrapScan v2.0', 50, 793);
+    // ── FOOTER — lineBreak:false prevents PDFKit from creating new pages ──
+    doc.rect(0, 725, 595, 62).fill('#12121a');
+    doc.fillColor('#FF2D78').fontSize(9).font('Helvetica-Bold')
+      .text('ScrapScan v2.0', 50, 733, { lineBreak: false });
     doc.fillColor('#aaaacc').fontSize(8).font('Helvetica')
-      .text('IIM MATRIXx 2026 | IIT ISM Dhanbad | AI Scrap Quality Intelligence', 50, 807)
-      .text('This report is AI-generated. Verify with XRF for regulatory decisions.', 50, 820);
+      .text('IIM MATRIXx 2026 | IIT ISM Dhanbad | AI Scrap Quality Intelligence', 50, 747, { lineBreak: false });
+    doc.text('This report is AI-generated. Verify with XRF for regulatory decisions.', 50, 760, { lineBreak: false });
 
     doc.end();
   } catch (err) {
